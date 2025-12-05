@@ -9,7 +9,7 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-    const { fontSize, setFontSize, showTranslation, setShowTranslation } = useSettings();
+    const { fontSize, setFontSize, showTranslation, setShowTranslation, fontFamily, setFontFamily } = useSettings();
 
     if (!isOpen) return null;
 
@@ -54,8 +54,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             Arabic Font Style
                         </label>
                         <select
-                            value={useSettings().fontFamily}
-                            onChange={(e) => useSettings().setFontFamily(e.target.value)}
+                            value={fontFamily}
+                            onChange={(e) => setFontFamily(e.target.value)}
                             className="w-full text-sm border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none"
                         >
                             <option value="amiri">Amiri (Naskh)</option>

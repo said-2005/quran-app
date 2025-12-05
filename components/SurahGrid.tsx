@@ -53,7 +53,7 @@ export default function SurahGrid({ surahs }: SurahGridProps) {
                 ))}
                 {filteredSurahs.length === 0 && (
                     <div className="col-span-full text-center py-12 text-gray-500 dark:text-gray-400">
-                        No Surahs found matching "{searchQuery}"
+                        No Surahs found matching &quot;{searchQuery}&quot;
                     </div>
                 )}
             </div>
