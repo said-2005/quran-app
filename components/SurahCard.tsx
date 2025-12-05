@@ -1,12 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-
-export interface Surah {
-    id: number;
-    name_simple: string;
-    name_arabic: string;
-    verses_count: number;
-}
+import { Surah } from '@/types';
 
 interface SurahCardProps {
     surah: Surah;

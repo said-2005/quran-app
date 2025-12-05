@@ -1,9 +1,10 @@
 import Header from "@/components/Header";
 import SurahGrid from "@/components/SurahGrid";
-import { Surah } from "@/components/SurahCard";
+import { Surah } from "@/types";
+import { API_BASE_URL } from "@/lib/constants";
 
 async function getSurahs(): Promise<Surah[]> {
-  const res = await fetch("https://api.quran.com/api/v4/chapters");
+  const res = await fetch(`${API_BASE_URL}/chapters`);
   if (!res.ok) {
     throw new Error("Failed to fetch surahs");
   }

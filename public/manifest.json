@@ -1,6 +1,7 @@
 {
   "name": "Quran Karim",
   "short_name": "Quran",
+  "description": "Read the Holy Quran",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

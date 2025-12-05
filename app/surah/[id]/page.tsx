@@ -3,20 +3,21 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import VerseList from '@/components/VerseList';
 import AudioPlayer from '@/components/AudioPlayer';
+import { API_BASE_URL } from '@/lib/constants';
 
 interface PageProps {
     params: Promise<{ id: string }>;
 }
 
 async function getSurah(id: string) {
-    const res = await fetch(`https://api.quran.com/api/v4/chapters/${id}`);
+    const res = await fetch(`${API_BASE_URL}/chapters/${id}`);
     if (!res.ok) throw new Error('Failed to fetch surah');
     return res.json();
 }
 
 async function getVerses(id: string) {
     // Fetch all verses for the chapter. 286 is the max number of verses in a surah (Al-Baqarah)
-    const res = await fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?fields=text_uthmani&per_page=286`);
+    const res = await fetch(`${API_BASE_URL}/verses/by_chapter/${id}?fields=text_uthmani&translations=131&per_page=286`);
     if (!res.ok) throw new Error('Failed to fetch verses');
     return res.json();
 }

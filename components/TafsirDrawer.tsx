@@ -1,18 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { TafsirResponse } from '@/types';
+import { API_BASE_URL } from '@/lib/constants';
 
 interface TafsirDrawerProps {
     isOpen: boolean;
     onClose: () => void;
     verseKey: string | null;
-}
-
-interface TafsirResponse {
-    tafsir: {
-        text: string;
-        resource_name: string;
-    };
 }
 
 const TafsirDrawer: React.FC<TafsirDrawerProps> = ({ isOpen, onClose, verseKey }) => {
@@ -24,7 +19,7 @@ const TafsirDrawer: React.FC<TafsirDrawerProps> = ({ isOpen, onClose, verseKey }
         if (isOpen && verseKey) {
             setLoading(true);
             setError(null);
-            fetch(`https://api.quran.com/api/v4/tafsirs/16/by_ayah/${verseKey}`)
+            fetch(`${API_BASE_URL}/tafsirs/16/by_ayah/${verseKey}`)
                 .then((res) => {
                     if (!res.ok) throw new Error('Failed to fetch Tafsir');
                     return res.json();
@@ -58,7 +53,20 @@ const TafsirDrawer: React.FC<TafsirDrawerProps> = ({ isOpen, onClose, verseKey }
             >
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-xl font-bold text-gray-900">Tafsir (Al-Muyassar)</h2>
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Tafsir</h2>
+                            <select
+                                value={selectedTafsirId}
+                                onChange={(e) => setSelectedTafsirId(Number(e.target.value))}
+                                className="text-sm border border-gray-300 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none"
+                            >
+                                {TAFSIR_OPTIONS.map((option) => (
+                                    <option key={option.id} value={option.id}>
+                                        {option.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <button
                             onClick={onClose}
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
