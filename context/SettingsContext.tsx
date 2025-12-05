@@ -38,9 +38,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         }
     }, [fontSize, showTranslation, fontFamily, mounted]);
 
-    if (!mounted) {
-        return <>{children}</>;
-    }
+
 
     return (
         <SettingsContext.Provider value={{ fontSize, setFontSize, showTranslation, setShowTranslation, fontFamily, setFontFamily }}>

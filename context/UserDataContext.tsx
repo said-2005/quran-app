@@ -53,9 +53,7 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    if (!mounted) {
-        return <>{children}</>;
-    }
+
 
     return (
         <UserDataContext.Provider value={{ bookmarks, toggleBookmark, notes, saveNote, deleteNote }}>
