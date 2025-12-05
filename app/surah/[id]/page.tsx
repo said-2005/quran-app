@@ -1,83 +1,79 @@
-import React from 'react';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import Header from '@/components/Header';
-import VerseList from '@/components/VerseList';
-import AudioPlayer from '@/components/AudioPlayer';
-import { Verse, Surah } from '@/types';
-// @ts-ignore
-import quranData from '@/data/quran.json';
+import VerseList from "@/components/VerseList";
+import AudioPlayer from "@/components/AudioPlayer";
+import Link from "next/link";
+import quranData from "@/data/quran.json";
+import { Surah, Verse } from "@/types";
 
-// define page props
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
-
-// 1. Generate params INSTANTLY from local JSON
+// Generate all static paths at build time
 export async function generateStaticParams() {
-    // No fetch calls here!
-    return (quranData as any[]).map((surah) => ({
+    return quranData.map((surah) => ({
         id: surah.id.toString(),
     }));
 }
 
-export default async function SurahPage({ params }: PageProps) {
-    const { id } = await params;
-    const surahId = parseInt(id);
-
-    // 2. Get data from local JSON
-    const localSurah = (quranData as any[]).find((s) => s.id === surahId);
+export default function SurahPage({ params }: { params: { id: string } }) {
+    const surahId = parseInt(params.id);
+    const localSurah = quranData.find((s) => s.id === surahId);
 
     if (!localSurah) {
-        notFound();
+        return <div className="text-center py-20">Surah not found</div>;
     }
 
-    // 3. Map to our interfaces
+    // Map local data to Surah interface
     const surah: Surah = {
         id: localSurah.id,
-        name_simple: localSurah.transliteration,
-        name_arabic: localSurah.name,
-        verses_count: localSurah.total_verses,
-        revelation_place: localSurah.type,
-        translated_name: {
-            name: localSurah.transliteration,
-            language_name: 'english'
-        }
+        name_simple: localSurah.transliteration, // Mapping transliteration to name_simple
+        name_arabic: localSurah.name, // Mapping name to name_arabic
+        verses_count: localSurah.total_verses, // Mapping total_verses to verses_count
+        revelation_place: localSurah.type, // Mapping type to revelation_place
     };
 
-    const verses: Verse[] = localSurah.verses.map((v: any) => ({
+    // Map local data to Verse interface
+    const verses: Verse[] = localSurah.verses.map((v) => ({
         id: v.id,
         verse_key: `${surah.id}:${v.id}`,
-        text_uthmani: v.text,
-        // Local JSON from this source doesn't have translations in the verses array usually, 
-        // but we keep the structure valid.
-        translations: [] 
+        text_uthmani: v.text, // Mapping text to text_uthmani
+        translations: [], // Local data might not have translations, providing empty array or mock
     }));
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-            <Header />
-            <main className="flex-grow container mx-auto px-4 py-8 pb-32">
-                 <Link href="/quran" className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white mb-6 w-fit transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+        <div className="container mx-auto px-4 pb-32">
+            {/* Back Button */}
+            <div className="pt-6 pb-2">
+                <Link
+                    href="/quran"
+                    className="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors font-amiri text-lg px-3 py-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="w-5 h-5 rtl:rotate-180"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
-                    <span>العودة للقائمة</span>
+                    العودة للفهرس
                 </Link>
+            </div>
 
-                <div className="text-center mb-10">
-                    <h1 className="font-amiri text-5xl mb-2 text-gray-800 dark:text-gray-100">{surah.name_arabic}</h1>
-                    <p className="text-xl text-gray-600 dark:text-gray-300">{surah.name_simple}</p>
-                    <div className="flex justify-center gap-4 mt-4 text-sm text-gray-500 dark:text-gray-400">
-                         <span>{surah.verses_count} Verses</span>
-                         <span>•</span>
-                         <span className="capitalize">{surah.revelation_place}</span>
-                    </div>
-                </div>
+            <div className="bg-emerald-50 dark:bg-zinc-800/50 rounded-3xl p-8 mb-8 text-center border border-emerald-100 dark:border-zinc-700">
+                <h1 className="text-4xl md:text-6xl font-amiri text-emerald-800 dark:text-emerald-400 mb-2">
+                    {surah.name_arabic}
+                </h1>
+                <p className="text-xl text-zinc-600 dark:text-zinc-400 font-amiri">
+                    {surah.verses_count} آية • {surah.revelation_place === "makkah" ? "مكية" : "مدنية"}
+                </p>
+            </div>
 
+            <div className="bg-white dark:bg-zinc-900/50 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800">
                 <VerseList verses={verses} />
-            </main>
-            <AudioPlayer chapterId={id} />
+            </div>
+
+            <AudioPlayer
+                chapterId={surahId.toString()}
+            />
         </div>
     );
 }

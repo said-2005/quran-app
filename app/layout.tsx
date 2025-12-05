@@ -13,8 +13,13 @@ const amiri = Amiri({
 
 export const metadata: Metadata = {
   title: "Quran App",
-  description: "Read the Holy Quran",
+  description: "Read, Listen, and Reflect",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Quran App",
+  },
 };
 
 export const viewport: Viewport = {

@@ -2,51 +2,58 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
-const FILE_PATH = path.join(DATA_DIR, 'quran.json');
-const URL = 'https://raw.githubusercontent.com/risan/quran-json/main/dist/quran.json';
+const dataDir = path.join(process.cwd(), 'data');
 
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-    console.log('Creating data directory...');
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir);
 }
 
-console.log(`Downloading Quran data from ${URL}...`);
+const files = [
+    {
+        url: 'https://raw.githubusercontent.com/risan/quran-json/main/dist/quran.json',
+        path: path.join(dataDir, 'quran.json'),
+        name: 'Quran Data'
+    },
+    {
+        url: 'https://raw.githubusercontent.com/nawafalamoudi/adhkar/main/adhkar.json',
+        path: path.join(dataDir, 'adhkar.json'),
+        name: 'Adhkar Data'
+    }
+];
 
-https.get(URL, (res) => {
-    if (res.statusCode !== 200) {
-        console.error(`Failed to download data: Status Code ${res.statusCode}`);
+const downloadFile = (file) => {
+    return new Promise((resolve, reject) => {
+        const fileStream = fs.createWriteStream(file.path);
+        console.log(`Downloading ${file.name}...`);
+
+        https.get(file.url, (response) => {
+            if (response.statusCode !== 200) {
+                reject(new Error(`Failed to download ${file.name}: Status Code ${response.statusCode}`));
+                return;
+            }
+
+            response.pipe(fileStream);
+
+            fileStream.on('finish', () => {
+                fileStream.close();
+                console.log(`✅ ${file.name} downloaded successfully!`);
+                resolve();
+            });
+        }).on('error', (err) => {
+            fs.unlink(file.path, () => { }); // Delete the file async. (But we don't check result)
+            reject(new Error(`Error downloading ${file.name}: ${err.message}`));
+        });
+    });
+};
+
+const downloadAll = async () => {
+    try {
+        await Promise.all(files.map(downloadFile));
+        console.log('🎉 All data downloaded successfully!');
+    } catch (error) {
+        console.error('❌ Error:', error.message);
         process.exit(1);
     }
+};
 
-    let data = '';
-
-    res.on('data', (chunk) => {
-        data += chunk;
-        process.stdout.write('.'); // Progress indicator
-    });
-
-    res.on('end', () => {
-        console.log('\nDownload complete. Verifying JSON...');
-        try {
-            // Verify it's valid JSON
-            const json = JSON.parse(data);
-             // Basic structure check
-             if (!Array.isArray(json)) {
-                 throw new Error('Downloaded data is not an array');
-             }
-            
-            fs.writeFileSync(FILE_PATH, data);
-            console.log(`\nSuccess! Saved ${json.length} chapters to ${FILE_PATH}`);
-            console.log('You can now build the app instantly.');
-        } catch (error) {
-            console.error('\nError parsing or saving JSON:', error.message);
-            process.exit(1);
-        }
-    });
-
-}).on('error', (err) => {
-    console.error('\nError fetching data:', err.message);
-    process.exit(1);
-});
+downloadAll();

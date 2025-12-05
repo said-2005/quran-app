@@ -1,95 +1,75 @@
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import Link from "next/link";
+import adhkarData from "@/data/adhkar.json";
 
-interface DhikrItem {
-    id: number;
-    text: string;
-    count: number;
-    audio: string;
-    filename: string;
-}
-
-interface AdhkarCategory {
-    id: number;
-    category: string;
-    audio: string;
-    filename: string;
-    array: DhikrItem[];
-}
-
-async function getAdhkarData(): Promise<AdhkarCategory[]> {
-    const res = await fetch('https://raw.githubusercontent.com/rn0x/Adhkar-json/main/adhkar.json');
-    if (!res.ok) {
-        throw new Error('Failed to fetch Adhkar data');
-    }
-    return res.json();
-}
-
-// 1. Generate Static Paths (SSG) with Progress Logging
+// Generate all static paths at build time
 export async function generateStaticParams() {
-    console.log('[Build] Fetching Adhkar categories for SSG...');
-    const categories = await getAdhkarData();
-
-    return categories.map((category, index) => {
-        console.log(`[Build] Generating static params for Adhkar Category: ${category.category} (${index + 1}/${categories.length})`);
-        return {
-            id: category.id.toString(),
-        };
-    });
+    return (adhkarData as any[]).map((item: any) => ({
+        id: encodeURIComponent(item.category),
+        // Next.js double-encodes or handles encoding quirks, but typically we return the decoded or encoded value depending on how it's used.
+        // generateStaticParams expects string params. 
+    }));
 }
 
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
+export default function AdhkarDetailPage({ params }: { params: { id: string } }) {
+    const decodedId = decodeURIComponent(params.id);
+    const dhikrCategory = (adhkarData as any[]).find((item: any) => item.category === decodedId);
 
-// 2. Page Component
-export default async function AdhkarDetailPage({ params }: PageProps) {
-    const { id } = await params;
-    const categories = await getAdhkarData();
-    const category = categories.find((c) => c.id.toString() === id);
-
-    if (!category) {
-        notFound();
+    if (!dhikrCategory) {
+        return <div className="text-center py-20">Adhkar Category Not Found</div>;
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-            <div className="bg-emerald-600 dark:bg-emerald-800 text-white p-4 shadow-md sticky top-0 z-10">
-                <div className="container mx-auto flex justify-between items-center max-w-3xl">
-                    <Link href="/adhkar" className="flex items-center gap-1 text-emerald-100 hover:text-white transition-colors font-bold">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                        <span className="hidden sm:inline">القائمة</span>
-                    </Link>
-                    <h1 className="text-xl md:text-2xl font-bold font-amiri text-center flex-grow truncate px-4">
-                        {category.category}
-                    </h1>
-                    <div className="w-16"></div> {/* Spacer for centering title */}
-                </div>
+        <div className="container mx-auto px-4 py-8 pb-32">
+            {/* Back Button */}
+            <div className="pt-6 pb-2">
+                <Link
+                    href="/adhkar"
+                    className="inline-flex items-center gap-2 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors font-amiri text-lg px-3 py-1 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="w-5 h-5 rtl:rotate-180"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                    العودة للأذكار
+                </Link>
             </div>
 
-            <main className="flex-grow container mx-auto px-4 py-8 max-w-3xl">
-                <div className="space-y-6">
-                    {category.array.map((item, index) => (
-                        <div
-                            key={item.id}
-                            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-emerald-50 dark:border-gray-700 hover:shadow-md transition-shadow relative overflow-hidden group"
-                        >
-                            <div className="flex justify-between items-start mb-4">
-                                <span className="inline-flex items-center justify-center min-w-[2.5rem] h-10 px-4 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 text-base font-bold border border-emerald-200 dark:border-emerald-800">
-                                    {item.count} {item.count === 1 ? 'مرة' : 'مرات'}
-                                </span>
-                                <span className="text-xs text-gray-400 font-mono">#{index + 1}</span>
-                            </div>
+            <div className="text-center mb-8 bg-amber-50 dark:bg-zinc-800/50 p-8 rounded-3xl border border-amber-100 dark:border-zinc-700">
+                <h1 className="text-3xl md:text-5xl font-amiri text-amber-800 dark:text-amber-400">
+                    {dhikrCategory.category}
+                </h1>
+            </div>
 
-                            <p className="text-xl md:text-2xl text-gray-800 dark:text-gray-200 font-amiri leading-loose text-right" style={{ lineHeight: '2.2' }}>
-                                {item.text}
+            <div className="space-y-6">
+                {dhikrCategory.array.map((dhikr: any, index: number) => (
+                    <div key={index} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-700 relative overflow-hidden">
+
+                        <div className="mb-4">
+                            <p className="text-2xl leading-loose font-amiri text-zinc-800 dark:text-zinc-200 text-center">
+                                {dhikr.text}
                             </p>
                         </div>
-                    ))}
-                </div>
-            </main>
+
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-700">
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                                {dhikr.count > 1 ? `التكرار: ${dhikr.count}` : ''}
+                            </p>
+                            {dhikr.audio && (
+                                <audio controls className="w-full md:w-64">
+                                    <source src={dhikr.audio} type="audio/mp3" />
+                                    Your browser does not support the audio element.
+                                </audio>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
