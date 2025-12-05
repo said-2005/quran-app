@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { AudioResponse } from '@/types';
-import { API_BASE_URL } from '@/lib/constants';
+import { API_BASE_URL, RECITER_OPTIONS } from '@/lib/constants';
 
 interface AudioPlayerProps {
     chapterId: string;
@@ -14,16 +14,26 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ chapterId }) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    const [selectedReciterId, setSelectedReciterId] = useState(RECITER_OPTIONS[0].id);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         // Fetch audio URL
-        fetch(`${API_BASE_URL}/chapter_recitations/7/${chapterId}`)
-            .then((res) => res.json())
+        console.log(`Fetching audio for chapter ${chapterId} with reciter ${selectedReciterId}`);
+        setError(null);
+        fetch(`${API_BASE_URL}/chapter_recitations/${selectedReciterId}/${chapterId}`)
+            .then((res) => {
+                if (!res.ok) throw new Error('Failed to fetch audio');
+                return res.json();
+            })
             .then((data: AudioResponse) => {
                 setAudioUrl(data.audio_file.audio_url);
             })
-            .catch((err) => console.error('Failed to fetch audio', err));
-    }, [chapterId]);
+            .catch((err) => {
+                console.error('Failed to fetch audio', err);
+                setError('Failed to load audio. Please try another reciter.');
+            });
+    }, [chapterId, selectedReciterId]);
 
     const togglePlay = () => {
         if (audioRef.current) {

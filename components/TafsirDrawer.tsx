@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { TafsirResponse } from '@/types';
-import { API_BASE_URL } from '@/lib/constants';
+import { API_BASE_URL, TAFSIR_OPTIONS } from '@/lib/constants';
 
 interface TafsirDrawerProps {
     isOpen: boolean;
@@ -14,12 +14,13 @@ const TafsirDrawer: React.FC<TafsirDrawerProps> = ({ isOpen, onClose, verseKey }
     const [tafsir, setTafsir] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [selectedTafsirId, setSelectedTafsirId] = useState(TAFSIR_OPTIONS[0].id);
 
     useEffect(() => {
         if (isOpen && verseKey) {
             setLoading(true);
             setError(null);
-            fetch(`${API_BASE_URL}/tafsirs/16/by_ayah/${verseKey}`)
+            fetch(`${API_BASE_URL}/tafsirs/${selectedTafsirId}/by_ayah/${verseKey}`)
                 .then((res) => {
                     if (!res.ok) throw new Error('Failed to fetch Tafsir');
                     return res.json();
@@ -34,7 +35,7 @@ const TafsirDrawer: React.FC<TafsirDrawerProps> = ({ isOpen, onClose, verseKey }
                     setLoading(false);
                 });
         }
-    }, [isOpen, verseKey]);
+    }, [isOpen, verseKey, selectedTafsirId]);
 
     return (
         <>
