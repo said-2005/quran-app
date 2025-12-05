@@ -34,6 +34,7 @@ export default function Home() {
             className={`
               flex flex-col items-center justify-center p-8 rounded-2xl border-2
               transition-all duration-300 transform hover:scale-105 hover:shadow-xl
+              relative z-10 cursor-pointer
               ${card.color}
             `}
           >
