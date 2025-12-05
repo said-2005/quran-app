@@ -1,20 +1,27 @@
+import Link from 'next/link';
 import Header from "@/components/Header";
 import SurahGrid from "@/components/SurahGrid";
 import { Surah } from "@/types";
-import { API_BASE_URL } from "@/lib/constants";
-import Link from 'next/link';
+// @ts-ignore - Ensure data exists or types are ignored for the JSON import if strict
+import quranData from '@/data/quran.json';
 
-async function getSurahs(): Promise<Surah[]> {
-    const res = await fetch(`${API_BASE_URL}/chapters`);
-    if (!res.ok) {
-        throw new Error("Failed to fetch surahs");
+// Utility helper to map local JSON schema to app's Surah interface
+const mapLocalSurahToInterface = (localSurah: any): Surah => ({
+    id: localSurah.id,
+    name_simple: localSurah.transliteration,
+    name_arabic: localSurah.name,
+    verses_count: localSurah.total_verses,
+    revelation_place: localSurah.type,
+    // Provide a fallback translated name since it's missing in local data
+    translated_name: {
+        name: localSurah.transliteration, // Fallback
+        language_name: 'english'
     }
-    const data = await res.json();
-    return data.chapters;
-}
+});
 
-export default async function QuranPage() {
-    const surahs = await getSurahs();
+export default function QuranPage() {
+    // Map the local data to the expected interface
+    const surahs: Surah[] = (quranData as any[]).map(mapLocalSurahToInterface);
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
