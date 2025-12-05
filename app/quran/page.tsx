@@ -2,25 +2,24 @@ import Link from 'next/link';
 import Header from "@/components/Header";
 import SurahGrid from "@/components/SurahGrid";
 import { Surah } from "@/types";
-// @ts-ignore - Ensure data exists or types are ignored for the JSON import if strict
+// @ts-ignore
 import quranData from '@/data/quran.json';
 
-// Utility helper to map local JSON schema to app's Surah interface
+// Utility helper to map local Surah objects to our App's Surah interface
 const mapLocalSurahToInterface = (localSurah: any): Surah => ({
     id: localSurah.id,
     name_simple: localSurah.transliteration,
     name_arabic: localSurah.name,
     verses_count: localSurah.total_verses,
     revelation_place: localSurah.type,
-    // Provide a fallback translated name since it's missing in local data
     translated_name: {
-        name: localSurah.transliteration, // Fallback
+        name: localSurah.transliteration,
         language_name: 'english'
     }
 });
 
 export default function QuranPage() {
-    // Map the local data to the expected interface
+    // 1. Read directly from local JSON
     const surahs: Surah[] = (quranData as any[]).map(mapLocalSurahToInterface);
 
     return (
@@ -35,6 +34,7 @@ export default function QuranPage() {
                         <span className="font-bold text-sm">عودة للرئيسية</span>
                     </Link>
                 </div>
+                {/* 2. Pass data to Client Component */}
                 <SurahGrid surahs={surahs} />
             </main>
         </div>
