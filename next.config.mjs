@@ -4,6 +4,8 @@ const withPWA = withPWAInit({
     dest: "public",
     register: true,
     workboxOptions: {
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
             {
                 urlPattern: /^https:\/\/api\.quran\.com\/api\/v4\/.*/i,
@@ -44,6 +46,16 @@ const withPWA = withPWAInit({
                     },
                     cacheableResponse: {
                         statuses: [0, 200],
+                    },
+                },
+            },
+            {
+                urlPattern: /^https?.*/,
+                handler: "NetworkFirst",
+                options: {
+                    cacheName: "offlineCache",
+                    expiration: {
+                        maxEntries: 200,
                     },
                 },
             },
