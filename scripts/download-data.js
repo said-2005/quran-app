@@ -15,7 +15,7 @@ const files = [
         name: 'Quran Data'
     },
     {
-        url: 'https://raw.githubusercontent.com/nawafalamoudi/adhkar/main/adhkar.json',
+        url: 'https://raw.githubusercontent.com/rn0x/Adhkar-json/main/adhkar.json',
         path: path.join(dataDir, 'adhkar.json'),
         name: 'Adhkar Data'
     }
