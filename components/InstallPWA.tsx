@@ -31,7 +31,7 @@ export default function InstallPWA() {
 
     return (
         <button
-            className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-2xl z-50 font-bold animate-bounce hover:bg-blue-700 transition"
+            className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full shadow-2xl z-50 font-bold animate-bounce hover:bg-blue-700 transition pointer-events-auto"
             id="setup_button"
             aria-label="Install app"
             title="Install app"

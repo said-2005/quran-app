@@ -30,8 +30,8 @@ export default function IosInstallPrompt() {
     }
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-8 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-transform duration-300 transform translate-y-0">
-            <div className="max-w-md mx-auto flex flex-col items-center text-center space-y-4">
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-8 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-transform duration-300 transform translate-y-0 pointer-events-none">
+            <div className="max-w-md mx-auto flex flex-col items-center text-center space-y-4 pointer-events-auto">
                 <div className="flex justify-between w-full items-start">
                     <div className="text-left rtl:text-right">
                         <h3 className="font-bold text-lg text-emerald-600 dark:text-emerald-400">Install App</h3>
