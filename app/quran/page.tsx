@@ -40,10 +40,10 @@ export default function QuranPage() {
                                     </div>
                                     <div>
                                         <h2 className="text-xl font-bold font-amiri group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                                            {surah.name_arabic}
+                                            {surah.name}
                                         </h2>
                                         <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                                            {surah.verses_count} آية • {surah.revelation_place === "makkah" ? "مكية" : "مدنية"}
+                                            {surah.total_verses} آية • {surah.type === "makkah" ? "مكية" : "مدنية"}
                                         </p>
                                     </div>
                                 </div>
