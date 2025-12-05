@@ -2,17 +2,16 @@ import Link from "next/link";
 import adhkarData from "@/data/adhkar.json";
 
 // Generate all static paths at build time
+// Generate all static paths at build time
 export async function generateStaticParams() {
     return (adhkarData as any[]).map((item: any) => ({
-        id: encodeURIComponent(item.category),
-        // Next.js double-encodes or handles encoding quirks, but typically we return the decoded or encoded value depending on how it's used.
-        // generateStaticParams expects string params. 
+        id: item.id.toString(),
     }));
 }
 
 export default function AdhkarDetailPage({ params }: { params: { id: string } }) {
-    const decodedId = decodeURIComponent(params.id);
-    const dhikrCategory = (adhkarData as any[]).find((item: any) => item.category === decodedId);
+    const startId = parseInt(params.id);
+    const dhikrCategory = (adhkarData as any[]).find((item: any) => item.id === startId);
 
     if (!dhikrCategory) {
         return <div className="text-center py-20">Adhkar Category Not Found</div>;

@@ -32,8 +32,8 @@ export default function AdhkarPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(adhkarData as any[]).map((item: any, index: number) => (
                     <Link
-                        href={`/adhkar/${encodeURIComponent(item.category)}`}
-                        key={index}
+                        href={`/adhkar/${item.id}`}
+                        key={item.id}
                     >
                         <div className="bg-white dark:bg-zinc-800 p-6 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-700 hover:border-amber-500 dark:hover:border-amber-500 transition-all hover:shadow-md group h-full flex items-center justify-between">
                             <div>
