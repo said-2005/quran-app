@@ -1,0 +1,26 @@
+[
+  {
+    "id": "bukhari",
+    "name": "Sahih al-Bukhari",
+    "arabicName": "صحيح البخاري",
+    "description": "The most authentic book of Hadith."
+  },
+  {
+    "id": "muslim",
+    "name": "Sahih Muslim",
+    "arabicName": "صحيح مسلم",
+    "description": "One of the six major collections of Hadith."
+  },
+  {
+    "id": "malik",
+    "name": "Al-Muwatta",
+    "arabicName": "موطأ مالك",
+    "description": "The first written collection of Hadith."
+  },
+  {
+    "id": "nawawi",
+    "name": "Al-Nawawi's Forty Hadith",
+    "arabicName": "الأربعين النووية",
+    "description": "A compilation of forty hadiths by Imam al-Nawawi."
+  }
+]
