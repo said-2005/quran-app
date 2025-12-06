@@ -3,22 +3,42 @@ import { notFound } from "next/navigation";
 import path from "path";
 import fs from "fs";
 import Link from "next/link";
-import BookReader from "../../../components/BookReader"; // We'll create this client component
+import BookReader from "../../../components/BookReader";
+
+// Explicit mapping to ensure URLs match filenames
+const BOOK_FILES: Record<string, string[]> = {
+    "bukhari": ["bukhari.json", "ara-bukhari.json"],
+    "muslim": ["muslim.json", "ara-muslim.json"],
+    "malik": ["malik.json", "ara-malik.json"],
+    "nawawi": ["nawawi.json", "ara-nawawi.json"]
+};
 
 // Generate static params for SSG
 export function generateStaticParams() {
-    return [
-        { bookId: "bukhari" },
-        { bookId: "muslim" },
-        { bookId: "malik" },
-        { bookId: "nawawi" },
-    ];
+    return Object.keys(BOOK_FILES).map((bookId) => ({
+        bookId,
+    }));
 }
 
 async function getBookData(bookId: string) {
-    const filePath = path.join(process.cwd(), "data", "books", `${bookId}.json`);
+    const validId = bookId.toLowerCase();
+    const possibleFilenames = BOOK_FILES[validId];
 
-    if (!fs.existsSync(filePath)) {
+    if (!possibleFilenames) return null;
+
+    const dataDir = path.join(process.cwd(), "data", "books");
+
+    // Try to find the file
+    let filePath = "";
+    for (const filename of possibleFilenames) {
+        const p = path.join(dataDir, filename);
+        if (fs.existsSync(p)) {
+            filePath = p;
+            break;
+        }
+    }
+
+    if (!filePath) {
         return null;
     }
 
@@ -35,12 +55,13 @@ export default async function BookPage({ params }: { params: { bookId: string } 
     const data = await getBookData(params.bookId);
 
     if (!data) {
-        // If data not found (script didn't run), show helpful message or 404
         return (
             <div className="container mx-auto px-4 py-12 text-center">
                 <h1 className="text-2xl font-bold text-red-500 mb-4">Data Not Found</h1>
                 <p className="text-zinc-600 mb-6">
-                    Please run the download script to populate the library.<br />
+                    Book data not found for ID: <code>{params.bookId}</code><br />
+                    Please run the download script:
+                    <br />
                     <code>node scripts/download-books.js</code>
                 </p>
                 <Link href="/books" className="text-emerald-600 hover:underline">← Back to Library</Link>
