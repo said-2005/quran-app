@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export default function InstallPWA() {
+export default function InstallPWA({ children }: { children?: React.ReactNode }) {
     const [supportsPWA, setSupportsPWA] = useState(false);
     const [promptInstall, setPromptInstall] = useState<any>(null);
 
@@ -26,7 +26,15 @@ export default function InstallPWA() {
     };
 
     if (!supportsPWA) {
-        return null; // لا تظهر شيئاً إذا كان المتصفح لا يدعم التثبيت أو التطبيق مثبت أصلاً
+        return null;
+    }
+
+    if (children) {
+        return (
+            <div onClick={onClick} className="pointer-events-auto cursor-pointer">
+                {children}
+            </div>
+        );
     }
 
     return (
