@@ -3,6 +3,7 @@ import Link from "next/link";
 import fs from "fs";
 import path from "path";
 import { notFound } from "next/navigation";
+import HadithActions from "@/components/HadithActions";
 
 // Reuse the book data fetcher helper logic strictly for this page
 async function getHadith(bookId: string, hadithId: string) {
@@ -83,14 +84,7 @@ export default async function HadithPage({ params }: { params: { bookId: string,
             </div>
 
             {/* Tabs / Actions */}
-            <div className="mt-8 grid grid-cols-2 gap-4">
-                <button className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 py-4 rounded-xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition">
-                    📋 نسخ الحديث (Copy)
-                </button>
-                <div className="bg-amber-50 dark:bg-amber-900/10 text-amber-700 dark:text-amber-400 py-4 rounded-xl font-bold text-center border border-amber-100 dark:border-amber-800/30 flex items-center justify-center gap-2">
-                    <span>📚 الشرح (Online Only)</span>
-                </div>
-            </div>
+            <HadithActions text={hadith.text} />
         </div>
     );
 }
