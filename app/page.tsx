@@ -1,6 +1,7 @@
 import InstallPWA from "@/components/InstallPWA";
 import IosInstallPrompt from "@/components/IosInstallPrompt";
 import Link from "next/link";
+import PrayerTimesCard from "@/components/PrayerTimesCard";
 
 export default function Home() {
   const features = [
@@ -87,6 +88,9 @@ export default function Home() {
       {/* Main Features Grid */}
       <div className="max-w-6xl mx-auto px-4 -mt-8 relative z-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-3">
+            <PrayerTimesCard />
+          </div>
           {features.map((feature) => (
             <Link
               key={feature.title}
