@@ -29,7 +29,7 @@ export default function Home() {
     {
       title: "المكتبة الإسلامية",
       description: "كتب الحديث والسنة النبوية",
-      href: "/books",
+      href: "/library",
       icon: "📜",
       color: "bg-teal-50 dark:bg-teal-900/10 text-teal-600 dark:text-teal-400 border-teal-100 dark:border-teal-800 hover:border-teal-500",
     },

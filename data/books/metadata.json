@@ -1,0 +1,34 @@
+[
+  {
+    "id": "bukhari",
+    "name": "Sahih al-Bukhari",
+    "arabicName": "صحيح البخاري",
+    "grade": "Sahih",
+    "description": "The most authentic book of Hadith.",
+    "count": "N/A"
+  },
+  {
+    "id": "muslim",
+    "name": "Sahih Muslim",
+    "arabicName": "صحيح مسلم",
+    "grade": "Sahih",
+    "description": "One of the six major collections of Hadith.",
+    "count": "N/A"
+  },
+  {
+    "id": "malik",
+    "name": "Al-Muwatta",
+    "arabicName": "موطأ مالك",
+    "grade": "Hasan",
+    "description": "The first written collection of Hadith.",
+    "count": "N/A"
+  },
+  {
+    "id": "nawawi",
+    "name": "Al-Nawawi's Forty Hadith",
+    "arabicName": "الأربعين النووية",
+    "grade": "Sahih",
+    "description": "A compilation of forty hadiths by Imam al-Nawawi.",
+    "count": "N/A"
+  }
+]

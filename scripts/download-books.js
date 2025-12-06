@@ -3,13 +3,14 @@ const path = require('path');
 const https = require('https');
 
 const DATA_DIR = path.join(__dirname, '../data/books');
-const INDEX_FILE = path.join(DATA_DIR, 'index.json');
+const METADATA_FILE = path.join(DATA_DIR, 'metadata.json');
 
 const books = [
     {
         id: 'bukhari',
         name: 'Sahih al-Bukhari',
         arabicName: 'صحيح البخاري',
+        grade: 'Sahih', // Trusted
         url: 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-bukhari.json',
         description: 'The most authentic book of Hadith.'
     },
@@ -17,6 +18,7 @@ const books = [
         id: 'muslim',
         name: 'Sahih Muslim',
         arabicName: 'صحيح مسلم',
+        grade: 'Sahih', // Trusted
         url: 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-muslim.json',
         description: 'One of the six major collections of Hadith.'
     },
@@ -24,6 +26,7 @@ const books = [
         id: 'malik',
         name: 'Al-Muwatta',
         arabicName: 'موطأ مالك',
+        grade: 'Hasan', // Treating as Verified/Trusted for this feature context
         url: 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-malik.json',
         description: 'The first written collection of Hadith.'
     },
@@ -31,6 +34,7 @@ const books = [
         id: 'nawawi',
         name: "Al-Nawawi's Forty Hadith",
         arabicName: 'الأربعين النووية',
+        grade: 'Sahih',
         url: 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-nawawi.json',
         description: 'A compilation of forty hadiths by Imam al-Nawawi.'
     }
@@ -40,49 +44,77 @@ if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-const downloadFile = (url, dest) => {
+const downloadAndOptimize = (book) => {
     return new Promise((resolve, reject) => {
-        const file = fs.createWriteStream(dest);
-        https.get(url, (response) => {
+        https.get(book.url, (response) => {
             if (response.statusCode !== 200) {
-                reject(new Error(`Failed to get '${url}' (${response.statusCode})`));
+                reject(new Error(`Failed to get '${book.url}' (${response.statusCode})`));
                 return;
             }
-            response.pipe(file);
-            file.on('finish', () => {
-                file.close();
-                resolve();
+
+            let data = '';
+            response.on('data', (chunk) => data += chunk);
+            response.on('end', () => {
+                try {
+                    const json = JSON.parse(data);
+                    // Optimize: Keep only essential fields
+                    const optimizedHadiths = json.hadiths.map(h => ({
+                        id: h.hadithnumber, // Use simplified ID
+                        text: h.text,
+                        grades: h.grades
+                    }));
+
+                    const optimizedBook = {
+                        metadata: {
+                            id: book.id,
+                            name: book.name,
+                            arabicName: book.arabicName,
+                            grade: book.grade,
+                            section_details: json.metadata.section_details // Keep section info for details if needed
+                        },
+                        hadiths: optimizedHadiths
+                    };
+
+                    fs.writeFileSync(path.join(DATA_DIR, `${book.id}.json`), JSON.stringify(optimizedBook));
+                    resolve();
+                } catch (e) {
+                    reject(e);
+                }
             });
         }).on('error', (err) => {
-            fs.unlink(dest, () => reject(err));
+            reject(err);
         });
     });
 };
 
 const main = async () => {
-    console.log('Starting book downloads...');
+    console.log('Starting optimized book downloads...');
+
+    const metadata = [];
 
     for (const book of books) {
-        console.log(`Downloading ${book.name}...`);
+        console.log(`Processing ${book.name}...`);
         try {
-            await downloadFile(book.url, path.join(DATA_DIR, `${book.id}.json`));
-            console.log(`✓ ${book.name} downloaded.`);
+            await downloadAndOptimize(book);
+            console.log(`✓ ${book.name} optimized & saved.`);
+
+            metadata.push({
+                id: book.id,
+                name: book.name,
+                arabicName: book.arabicName,
+                grade: book.grade,
+                description: book.description,
+                count: 'N/A' // Could calculate this if needed
+            });
+
         } catch (error) {
-            console.error(`✗ Failed to download ${book.name}:`, error.message);
+            console.error(`✗ Failed to process ${book.name}:`, error.message);
         }
     }
 
-    // Create simplified index
-    const indexData = books.map(({ id, name, arabicName, description }) => ({
-        id,
-        name,
-        arabicName,
-        description
-    }));
-
-    fs.writeFileSync(INDEX_FILE, JSON.stringify(indexData, null, 2));
-    console.log('✓ index.json created.');
-    console.log('All operations complete.');
+    fs.writeFileSync(METADATA_FILE, JSON.stringify(metadata, null, 2));
+    console.log('✓ metadata.json created.');
+    console.log('Done.');
 };
 
 main();
