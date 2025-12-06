@@ -85,7 +85,7 @@ export default function LibraryPage({ searchParams }: SearchProps) {
             {query ? (
                 <div className="max-w-3xl mx-auto space-y-4">
                     <div className="flex items-center justify-between text-sm text-zinc-500 mb-4">
-                        <span>نتائج البحث عن: "{query}"</span>
+                        <span>نتائج البحث عن: &quot;{query}&quot;</span>
                         <span>{results.length} نتيجة</span>
                     </div>
 
