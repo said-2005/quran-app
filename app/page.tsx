@@ -26,6 +26,13 @@ export default function Home() {
       icon: "📿",
       color: "bg-blue-50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-800 hover:border-blue-500",
     },
+    {
+      title: "المكتبة الإسلامية",
+      description: "كتب الحديث والسنة النبوية",
+      href: "/books",
+      icon: "📜",
+      color: "bg-teal-50 dark:bg-teal-900/10 text-teal-600 dark:text-teal-400 border-teal-100 dark:border-teal-800 hover:border-teal-500",
+    },
   ];
 
   return (
