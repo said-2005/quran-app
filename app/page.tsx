@@ -59,7 +59,7 @@ export default function Home() {
               </h1>
 
               <p className="text-zinc-500 dark:text-zinc-400 text-lg font-light max-w-2xl mx-auto">
-                "Indeed, this Qur'an guides to that which is most suitable."
+                &quot;Indeed, this Qur&apos;an guides to that which is most suitable.&quot;
               </p>
             </div>
           </div>
