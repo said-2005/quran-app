@@ -14,10 +14,13 @@ async function getBook(bookId: string, page: number = 1, limit: number = 50) {
         // We can optimize by caching this if needed, but Next.js data cache helps.
         const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
-        const total = content.hadiths.length;
+        // Filter out empty hadiths first
+        const validHadiths = content.hadiths.filter((h: any) => h.text && h.text.length > 5);
+
+        const total = validHadiths.length;
         const start = (page - 1) * limit;
         const end = start + limit;
-        const items = content.hadiths.slice(start, end);
+        const items = validHadiths.slice(start, end);
 
         return {
             metadata: content.metadata,
